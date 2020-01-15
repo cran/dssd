@@ -32,6 +32,22 @@
 #' @slot coverage.reps The number of times the coverage simulation was repeated.
 #' @slot design.statistics A list of values obtained when investigating
 #' coverage. This includes the minimum, maximum, mean and median
+#' @section Methods:
+#' \describe{
+#'  \item{\code{generate.transects}}{\code{signature 'Survey.Design'}:
+#'  Generates a set of transects from the design.}
+#'  \item{\code{plot}}{\code{signature 'Survey.Design,ANY'}:
+#'  Plots the coverage scores contained within an object of class 'Survey.Design' and
+#'  provides a colour key relating to the coverage scores. This allows the user to
+#'  assess how even the coverage is across the survey region.}
+#'  \item{\code{show}}{\code{signature 'Survey.Design'}:
+#'  Gives a summary of the design description, stratum areas and coverage scores
+#'  if the coverage simulation has been run on the design. The coverage score summary
+#'  details the minimum, maximum, mean and medium coverage scores across the study
+#'  region. Also gives summaries of other design measures such as the number of
+#'  samplers, line length, trackline length, cyclic trackline length, covered area
+#'  and percentage of region covered.}
+#' }
 #' @keywords classes
 #' @export
 #' @importFrom methods validObject
@@ -57,11 +73,17 @@ setClass(Class = "Survey.Design",
 
 #' Plot
 #'
-#' Plots an S4 object of class 'Survey.Design'
+#' Plots the coverage scores contained within an object of class 'Survey.Design' and
+#' provides a colour key relating to the coverage scores. This allows the user to
+#' assess how even the coverage is across the survey region.
 #'
 #' @param x object of class Survey.Design
 #' @param y not used
-#' @param ... other general plot parameters
+#' @param strata.id a numeric value indicating the index of the strata you wish to plot.
+#' @param col.breaks the number of break point in the colour scale representing the
+#' coverage scores.
+#' @param subtitle a subtitle for the plot.
+#' @param ... not implemented for this class.
 #' @rdname plot.Survey.Design-methods
 #' @exportMethod plot
 #' @importFrom plot3D colkey
@@ -70,16 +92,14 @@ setClass(Class = "Survey.Design",
 setMethod(
   f="plot",
   signature="Survey.Design",
-  definition=function(x, y, ...){
+  definition=function(x, y, strata.id = numeric(0), col.breaks = 10, subtitle = "", ...){
     #Check coverage has been run
     if(all(is.na(x@coverage.scores))){
       stop("Design has not been run yet, all coverage scores are NA.", call. = FALSE)
     }
     # If main is not supplied then take it from the object
     additional.args <- list(...)
-    col.breaks <- ifelse("col.breaks" %in% names(additional.args), additional.args$col.breaks, 10)
-    subtitle <- ifelse("subtitle" %in% names(additional.args), additional.args$subtitle, "")
-    strata.id <- ifelse("strata.id" %in% names(additional.args), additional.args$strata.id, "all")
+    strata.id <- ifelse(length(strata.id) == 0, "all", strata.id)
     # Get shape column names
     sf.column.region <- attr(x@region@region, "sf_column")
     sf.column.grid <- attr(x@coverage.grid@grid, "sf_column")
@@ -90,6 +110,7 @@ setMethod(
     # If not plotting all extract values for specific strata
     if(strata.id != "all"){
       region.coords <- region.coords[[strata.id]]
+      region.coords <- sf::st_sfc(region.coords, crs = sf::st_crs(x@region@region))
       coverage.grid <- x@coverage.grid@grid
       coverage.grid$coverage.scores <- coverage.scores
       coverage.grid <- suppressWarnings(sf::st_intersection(coverage.grid, region.coords))
@@ -132,9 +153,10 @@ setMethod(
                        "random" = "randomly located transects",
                        "systematic" = "systematically spaced transects",
                        "eszigzag" = "equal spaced zigzag",
-                       "eszigzagcom" = "complementaty equal spaced zigzags")
+                       "eszigzagcom" = "complementaty equal spaced zigzags",
+                       "segmentedgrid" = "segmented grid")
       cat("Design: ", design, fill = T)
-      if(object@design[strat] %in% c("systematic", "eszigzag", "eszigzagcom")){
+      if(object@design[strat] %in% c("systematic", "eszigzag", "eszigzagcom", "segmentedgrid")){
         cat("Spacing: ", object@spacing[strat], fill = T)
       }
       if(length(object@samplers) == 1){
@@ -149,8 +171,12 @@ setMethod(
         }else if(length(line.length) == length(strata.names)){
           cat("Line length: ", line.length[strat], fill = T)
         }else{
-          cat("Line Length: NA", fill = T)
+          cat("Line length: NA", fill = T)
         }
+      }
+      if(object@design[strat] %in% c("segmentedgrid")){
+        cat("Segment length: ", object@seg.length[strat], fill = T)
+        cat("Segment threshold: ", object@seg.threshold[strat], fill = T)
       }
       cat("Design angle: ", object@design.angle[strat], fill = T)
       cat("Edge protocol: ", object@edge.protocol[strat], fill = T)
@@ -186,15 +212,27 @@ setMethod(
      cat("   ", underline, fill = T)
      print(design.stats[[i]])
     }
-    if(length(object@coverage.scores) > 0){
+    if(!all(is.na(object@coverage.scores))){
       title <- "Coverage Score Summary:"
       cat("\n   ", title, fill = T)
       underline <- paste(rep("", (nchar(title)-3)), collapse = "")
       cat("   ", underline, fill = T)
-      cat("Minimum coverage score: ", min(object@coverage.scores, na.rm = T), fill = T)
-      cat("Maximum coverage score: ", max(object@coverage.scores, na.rm = T), fill = T)
-      cat("Mean coverage score: ", mean(object@coverage.scores, na.rm = T), fill = T)
-      cat("Coverage score sd: ", sd(object@coverage.scores, na.rm = T), fill = T)
+      cov.scores <- array(NA, dim = c(5, (length(strata.names)+1)), dimnames = list(c("Minimum", "Mean", "Median", "Maximum", "sd"), c(strata.names, "Total")))
+      for(i in seq(along = strata.names)){
+        cov.strat <- get.coverage(object, i)
+        cov.scores["Minimum",i] <- min(cov.strat, na.rm = T)
+        cov.scores["Mean",i] <- mean(cov.strat, na.rm = T)
+        cov.scores["Median",i] <- median(cov.strat, na.rm = T)
+        cov.scores["Maximum",i] <- max(cov.strat, na.rm = T)
+        cov.scores["sd",i] <- sd(cov.strat, na.rm = T)
+      }
+      #Add in total column
+      cov.scores["Minimum","Total"] <- min(object@coverage.scores, na.rm = T)
+      cov.scores["Mean","Total"] <- mean(object@coverage.scores, na.rm = T)
+      cov.scores["Median","Total"] <- median(object@coverage.scores, na.rm = T)
+      cov.scores["Maximum","Total"] <- max(object@coverage.scores, na.rm = T)
+      cov.scores["sd","Total"] <- sd(object@coverage.scores, na.rm = T)
+      print(cov.scores)
     }
   }
 )
@@ -205,11 +243,36 @@ setMethod(
 setMethod(
   f="get.coverage",
   signature="Survey.Design",
-  definition=function(object){
+  definition=function(object, strata.id = "all"){
     #Check coverage has been run
     if(all(is.na(object@coverage.scores))){
       stop("Design has not been run yet, all coverage scores are NA.", call. = FALSE)
     }else{
+      if(strata.id != "all"){
+        # Get shape column names
+        sf.column.region <- attr(object@region@region, "sf_column")
+        sf.column.grid <- attr(object@coverage.grid@grid, "sf_column")
+        # Extract coverage scores and region coords
+        coverage.scores <- object@coverage.scores
+        region.coords <- object@region@region[[sf.column.region]]
+        coverage.grid <- object@coverage.grid@grid
+        region.coords <- region.coords[[strata.id]]
+        region.coords <- sf::st_sfc(region.coords, crs = sf::st_crs(object@region@region))
+        coverage.grid <- object@coverage.grid@grid
+        coverage.grid$coverage.scores <- coverage.scores
+        #For backwards compatibility as the crs didn't use to be stored for the coverage grid
+        if(sf::st_crs(coverage.grid) != sf::st_crs(region.coords)){
+          if(is.na(sf::st_crs(coverage.grid))){
+            warning("Coverage grid has no coordinate reference system (crs), it may have been made in a previous verson of dssd. dssd will assume crs is the same as the region crs.", call. = FALSE)
+            sf::st_crs(coverage.grid) <- sf::st_crs(object@region@region)
+          }else{
+            stop("Coverage grid and region have different coordinate reference systems.")
+          }
+        }
+        coverage.grid <- suppressWarnings(sf::st_intersection(coverage.grid, region.coords))
+        coverage.scores <- coverage.grid$coverage.scores
+        return(coverage.scores)
+      }
       return(object@coverage.scores)
     }
   }

@@ -37,13 +37,17 @@ plot(region, transects, covered.area = TRUE)
 filename <- system.file("extdata/vigresults", "GSdesign.robj", package = "dssd")
 load(filename)
 
-
 ## ----coverage3, fig.align='center', fig.cap="Figure 4: The coverage grid", fig.width=6, fig.height=4----
 plot(design, subtitle = "Systematic Parallel, line.length = 1300km")
 
-## ----designstats, fig.align='center', fig.cap="Figure 5: The coverage grid", fig.width=6, fig.height=4----
-design
+## ----designstats2, eval = FALSE------------------------------------------
+#  design
 
-## ----coverage4, fig.align='center', fig.cap="Figure 6: Histogram of coverage scores", fig.width=6, fig.height=4----
+## ----designstats, echo = FALSE-------------------------------------------
+ops <- options(warn = -1)
+design
+options <- ops
+
+## ----coverage4, fig.align='center', fig.cap="Figure 5: Histogram of coverage scores", fig.width=6, fig.height=4----
 hist(get.coverage(design), xlab = "Coverage Scores", main = "Histogram of Coverage Scores")
 

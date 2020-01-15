@@ -9,7 +9,7 @@
 #'   number of areas in the shapefile / sf object). If not supplied "A", "B",
 #'   "C", ... will be assigned.
 #' @param units measurement units; either \code{"m"} for metres or \code{"km"} for
-#'   kilometres. If the shapefile has a projection file associated with it the unit
+#'   kilometres. If the shapefile has a projection file associated with it the units
 #'   will be taken from there.
 #' @param shape shapefile path to .shp file or an sf object of class sf, sfc or sfg.
 #' @return object of class Region
@@ -104,7 +104,21 @@ make.region <- function(region.name = "region",
 #' types of either point or line transect designs across strata but cannot mix
 #' point and line transect design types within a single design object.
 #'
-#' @details For point transect designs the user may either specify "random" or
+#' @details
+#'
+#' \strong{Plus versus Minus Sampling}
+#' If you choose for your design to use a minus sampling strategy then transects will
+#' only be generated within the survey region and will give lower coverage around the
+#' edge of the survey region. Plus sampling generates transects within an area
+#' greater than the study region. To do this \pkg{dssd} first puts a buffer around the
+#' study region before generating the transects within the buffered region. The width
+#' of the buffer is the truncation distance supplies by the user. Plus sampling
+#' helps to ensure more even coverage around the edge of the study area. See
+#' \emph{Buckland et. al, 2001} "Introduction to Distance Sampling" for information
+#' on when to use plus versus minus sampling.
+#'
+#' \strong{Point Transect Designs}
+#' For point transect designs the user may either specify "random" or
 #' "systematic" for the design argument. If the user specifies "random", they
 #' should also provide a value for effort detailing the number of point transects
 #' they wish their survey to have. For stratified designs they may specify a vector
@@ -118,60 +132,77 @@ make.region <- function(region.name = "region",
 #' point transect designs the user may select either a minus or plus sampling edge
 #' protocol.
 #'
+#' \strong{Line Transect Designs:}
 #' For line transect designs the user may either specify "random" (randomly
 #' placed full width lines), "systematic" (systematically placed full width lines),
-#' "eszigzag" (equally spaced zigzag lines) or "eszigzagcom" (two sets of complementary
-#' equally spaced zigzag lines). If the user specifies "random", they
-#' should provide the either the number of samplers they wish the design to generate
-#' or the line length they wish to achieve, either by strata or as a total. If the
-#' user specifies "systematic" they should specify either the number of samplers,
-#' the desired line length or the spacing between lines. The design angle for these
-#' parallel line designs refers to the angle of the lines where 0 is a vertical line
-#' and moving round in a clockwise direction. If the user specifies a zigzag design they
-#' should specify the systematic spacing value, number of samplers or line length
-#' to be used and should choose between generating the design in a minimum bounding
+#' "eszigzag" (equally spaced zigzag lines), "eszigzagcom" (two sets of complementary
+#' equally spaced zigzag lines) or "segmentedgrid" (a grid of short line transect
+#' segments). If the user specifies "random", they should provide the either the
+#' number of samplers they wish the design to generate or the line length they wish
+#' to achieve, either by strata or as a total. If the user specifies "systematic"
+#' they should specify either the number of samplers, the desired line length or
+#' the spacing between lines. The design angle for these parallel line designs
+#' refers to the angle of the lines where 0 is a vertical line and moving round
+#' in a clockwise direction. If the user specifies a zigzag design they should
+#' specify the systematic spacing value, number of samplers or line length to be
+#' used and should choose between generating the design in a minimum bounding
 #' rectangle or a convex hull. The default is minimum bounding rectangle which gives
-#' more even coverage but the convex hull is generally more efficient. The designs
-#' may be generated using plus or minus sampling protocols. Similar to the point
-#' transect designs different values may be specified for each strata for all of
-#' the above options. The design angle for the zigzag designs refers to the angle
-#' of a line which would run through the middle of each zigzag transect if the
-#' zigzags were to be generated within a rectangle. The design angle for zigzags
-#' should usually run along the longest dimension of the study region.
+#' more even coverage but the convex hull is generally more efficient. A segmented
+#' grid design may be generated using the either the number of samplers or total
+#' line length, combined with a value for segment length. Alternatively the user
+#' may specify a values for spacing and segment length. The segmented grid design
+#' also uses the segment threshold argument. All the designs may be generated
+#' using plus or minus sampling protocols. Similar to the point transect designs
+#' different values may be specified for each strata for all of the above options.
+#' The design angle for the zigzag designs refers to the angle of a line which
+#' would run through the middle of each zigzag transect if the zigzags were to
+#' be generated within a rectangle. The design angle for zigzags should usually
+#' run along the longest dimension of the study region.
 #'
-#' See the Multi Strata Vignette for more complex examples of defining designs
-#' across multiple strata.
+#' See the Getting Started Vignette and the Multiple Strata in dssd Vignette for
+#' example designs.
 #'
 #' @param region an object of class Region defining the survey region.
 #' @param transect.type character variable specifying either "line" or "point"
 #' @param design a character variable describing the type of design. Either "random",
-#' "systematic", "eszigzag" (equal-spaced zigzag) or "eszigzagcom" (equal spaced zigzag with complementary lines). See details for more information.
+#' "systematic", "eszigzag" (equal-spaced zigzag), "eszigzagcom" (equal spaced zigzag
+#' with complementary lines) or "segmentedgrid". See details for more information.
 #' @param samplers the number of samplers you wish the design to generate
 #' (note that the number actually generated may differ slightly due to the
-#' shape of the study region for some designs). This may be one value of a value
-#' per strata.
+#' shape of the study region for some designs). This may be one value or a value
+#' for each stratum.
 #' @param line.length the total line length you desire or a vector of line lengths
 #' the same length as the number of strata.
+#' @param seg.length the length of the line transect segments for a segmented grid
+#' design.
 #' @param effort.allocation numeric values used to indicate the proportion of effort
 #' to be allocated to each strata from number of samplers or line length. If length is
 #' 0 (the default) and only a total line length or total number of samplers is supplied,
-#' effort allocated based on stratum area.
+#' effort is allocated based on stratum area.
 #' @param design.angle numeric value detailing the angle of the design. Can provide
 #' multiple values relating to strata. The use of the angle varies with design, it
 #' can be either the angle of the grid of points, the angle of lines or the design
-#' axis for the zigzag design. See details.
-#' @param spacing used by systematic designs, numeric value to define spacing
-#' between transects. Can be a vector of values with one value per strata.
+#' axis for the zigzag design. See details. In addition, a value of -1 will cause a
+#' random design angle to be generated.
+#' @param spacing used by systematic designs, numeric value(s) to define spacing
+#' between transects. Can be a vector of values with one value per stratum.
 #' @param edge.protocol character value indicating whether a "plus" sampling or
-#' "minus" sampling protocol is used.
+#' "minus" sampling protocol is used. See details.
+#' @param seg.threshold this is a percentage threshold value applicable to segmented
+#' grid designs controlling which partial segments are discarded around the survey
+#' region boundary. By default, the value of 50, means that only segments that are
+#' more than half inside the survey region will be retained. To retain all segments,
+#' no matter how small they are when clipped to the survey region boundary set this
+#' value to 0.
 #' @param bounding.shape only applicable to zigzag designs. A character value saying
 #' whether the zigzag transects should be generated using a minimum bounding
-#' "rectangle" or a "convex hull".
+#' "rectangle" or a "convex hull". The default is a minimum bounding rectangle.
 #' @param truncation A single numeric value describing the longest distance at which
 #' an object may be observed. Truncation distance is constant across strata.
 #' @param coverage.grid An object of class Coverage.Grid for use when
 #' running the coverage simulation.
-#' @return object of a class which inherits from class Survey.Design
+#' @return object of a class which inherits from class Survey.Design either
+#' Line.Transect.Design or Point.Transect.Design
 #' @export
 #' @author Laura Marshall
 #' @examples
@@ -204,6 +235,9 @@ make.region <- function(region.name = "region",
 #' plot(design)
 #' # Display the design statistics
 #' design
+#' #Extract coverage scores
+#' coverage.scores <- get.coverage(design)
+#' hist(coverage.scores)
 #'
 #' #Multi-strata line transect example
 #' shapefile.name <- system.file("extdata", "AreaRProjStrata.shp", package = "dssd")
@@ -237,6 +271,9 @@ make.region <- function(region.name = "region",
 #' plot(design)
 #' # Display the design statistics
 #' design
+#' #Extract coverage scores for the first strata
+#' coverage.scores <- get.coverage(design, strata.id = 1)
+#' summary(coverage.scores)
 #' }
 #'
 #' # Fast running example for CRAN testing purposes
@@ -258,7 +295,7 @@ make.region <- function(region.name = "region",
 #' plot(design)
 #' design
 #'
-make.design <- function(region = make.region(), transect.type = "line", design = "systematic", samplers = numeric(0), line.length = numeric(0), effort.allocation = numeric(0), design.angle =  0, spacing = numeric(0), edge.protocol = "minus", bounding.shape = "rectangle", truncation = 1, coverage.grid = NULL){
+make.design <- function(region = make.region(), transect.type = "line", design = "systematic", samplers = numeric(0), line.length = numeric(0), seg.length = numeric(0), effort.allocation = numeric(0), design.angle =  0, spacing = numeric(0), edge.protocol = "minus", seg.threshold = numeric(0), bounding.shape = "rectangle", truncation = 1, coverage.grid = NULL){
   #Check if a coverage grid has been passed in - if not create one
   if(class(coverage.grid) != "Coverage.Grid"){
     if(!is.null(coverage.grid)){
@@ -273,7 +310,14 @@ make.design <- function(region = make.region(), transect.type = "line", design =
       samplers = 20
     }
     #Create line transect object
-    design <- new(Class="Line.Transect.Design", region, truncation, design, line.length, effort.allocation, spacing, samplers, design.angle, edge.protocol, bounding.shape, coverage.grid)
+    if(any(design == "segmentedgrid")){
+      if(length(seg.threshold) == 0){
+        seg.threshold <- 50
+      }
+      design <- new(Class="Segment.Transect.Design", region, truncation, design, line.length, seg.length, effort.allocation, spacing, samplers, design.angle, edge.protocol, seg.threshold, bounding.shape, coverage.grid)
+    }else{
+      design <- new(Class="Line.Transect.Design", region, truncation, design, line.length, effort.allocation, spacing, samplers, design.angle, edge.protocol, bounding.shape, coverage.grid)
+    }
   }else if(transect.type %in% c("Point", "point", "Point Transect", "point transect")){
     if(all(design == "random")){
       if(length(samplers) == 0){
@@ -295,7 +339,7 @@ make.design <- function(region = make.region(), transect.type = "line", design =
     if(any(any(na.omit(samplers) < 0) || any(na.omit(spacing) < 0))){
       stop("Negative values were used to specify effort.", call. = FALSE)
     }
-    #Create line transect object
+    #Create point transect object
     design <- new(Class="Point.Transect.Design", region, truncation, design, spacing, samplers, effort.allocation, design.angle, edge.protocol, coverage.grid)
   }
   #Check design object - make sure correct number of elements per slot etc
@@ -316,10 +360,12 @@ make.design <- function(region = make.region(), transect.type = "line", design =
 #' @title Creates a Coverage.Grid object
 #' @description This creates an instance of the Coverage.Grid class.
 #' @param region the region name
-#' @param spacing spacing to be used to create the coverage grid
+#' @param spacing spacing to be used to create the coverage grid. If
+#' spacing is specified then any value supplied for n.grid.points will
+#' be ignored.
 #' @param n.grid.points the desired number of grid points (note that
-#'   the exact number generated may differ slightly depending on the
-#'   shape of the study region).
+#' the exact number generated may differ slightly depending on the
+#' shape of the study region).
 #' @return object of class Coverage.Grid
 #' @export
 #' @author Laura Marshall
@@ -331,7 +377,7 @@ make.design <- function(region = make.region(), transect.type = "line", design =
 #' cover <- make.coverage(region, spacing = 50)
 #' plot(region, cover)
 #' # Create coverage grid by approx number of grid points
-#' cover <- make.coverage(region, n.grid.points = 100)
+#' cover <- make.coverage(region, n.grid.points = 1000)
 #' plot(region, cover)
 #' }
 #'
@@ -344,8 +390,14 @@ make.coverage <- function(region = make.region(),
                       spacing = numeric(0),
                       n.grid.points = 1000){
   #if neither, spacing, no.grid.points, or grid is provided make an empty coverage - used when this is called from within this function to generate a design to create the coverage grid.
-  if(length(spacing) == 0 && length(n.grid.points) == 0 && length(grid) == 0){
+  if(length(spacing) == 0 && length(n.grid.points) == 0){
     return(new("Coverage.Grid", list(), numeric(0)))
+  }
+  if(length(spacing) > 0 && length(n.grid.points) > 0){
+    if(n.grid.points != 1000){
+      warning("Both spacing and n.grid.points specified, n.grid.point will be disregarded.", call. = FALSE, immediate. = TRUE)
+    }
+    n.grid.points <- numeric(0)
   }
   #find union of region - coverage.grid is over the whole
   region.union <- sf::st_union(region@region)

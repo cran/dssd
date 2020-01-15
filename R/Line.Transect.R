@@ -3,7 +3,7 @@
 
 #' @title Class "Line.Transect" extends Class "Transect"
 #'
-#' @description Virtual Class \code{"Line.Transect"} is an S4 class
+#' @description Class \code{"Line.Transect"} is an S4 class
 #' detailing a set of transects from a point transect design.
 #' @name Line.Transect-class
 #' @title S4 Class "Line.Transect"
@@ -25,7 +25,7 @@ setClass(Class = "Line.Transect",
 setMethod(
   f="initialize",
   signature="Line.Transect",
-  definition=function(.Object, design, lines, samp.count, line.length, effort.allocation,
+  definition=function(.Object, design, lines, samp.count, line.length, seg.length, effort.allocation,
                       spacing, design.angle, edge.protocol, cov.area = numeric(0),
                       cov.area.polys = list(), strata.area, strata.names, trackline,
                       cyclictrackline){
@@ -66,6 +66,11 @@ setValidity("Line.Transect",
 #'
 #' Plots an S4 object of class 'Transect'
 #'
+#' @param x object of class transect
+#' @param y not used
+#' @param ... Additional arguments: add (TRUE/FALSE) whether to add to existing
+#' plot, col colour, lwd line width (for line transects) and pch point symbols
+#' (for point transects).
 #' @rdname plot.Transect-methods
 #' @exportMethod plot
 setMethod(
@@ -114,12 +119,17 @@ setMethod(
                        "random" = "randomly located transects",
                        "systematic" = "systematically spaced parallel transects",
                        "eszigzag" = "equal spaced zigzag",
-                       "eszigzagcom" = "complementaty equal spaced zigzags")
+                       "eszigzagcom" = "complementaty equal spaced zigzags",
+                       "segmentedgrid" = "segmented grid")
       cat("Design: ", design, fill = T)
-      if(object@design[strat] %in% c("systematic", "eszigzag", "eszigzagcom")){
+      if(object@design[strat] %in% c("systematic", "eszigzag", "eszigzagcom", "segmentedgrid")){
         cat("Spacing: ", object@spacing[strat], fill = T)
       }
       cat("Line length:", object@line.length[strat], fill = T)
+      if(object@design[strat] == "segmentedgrid"){
+        cat("Segment length: ", object@seg.length[strat], fill = T)
+        cat("Segment threshold: ", object@seg.threshold[strat], fill = T)
+      }
       cat("Trackline length:", object@trackline[strat], fill = T)
       cat("Cyclic trackline length:", object@cyclictrackline[strat], fill = T)
       cat("Number of samplers: ", object@samp.count[strat], fill = T)

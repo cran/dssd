@@ -3,9 +3,9 @@
 \docType{class}
 \name{Line.Transect.Design-class}
 \alias{Line.Transect.Design-class}
-\title{Virtual Class "Line.Transect.Design" extends Class "Survey.Design"}
+\title{Class "Line.Transect.Design" extends Class "Survey.Design"}
 \description{
-Virtual Class \code{"Line.Transect.Design"} is an S4 class detailing
+Class \code{"Line.Transect.Design"} is an S4 class detailing
 the type of line transect design.
 }
 \section{Slots}{
@@ -21,8 +21,8 @@ or a "convex hull".}
 \section{Methods}{
 
 \describe{
- \item{\code{generate.transects}}{\code{signature=(object = "Line.Transect.Design", ...)}:
- generates a set of transects from a shapefile.}
+ \item{\code{generate.transects}}{\code{signature=(object = "Line.Transect.Design", quiet = FALSE, ...)}:
+ generates a set of transects from the design.}
 }
 }
 

@@ -6,9 +6,11 @@
 \usage{
 make.design(region = make.region(), transect.type = "line",
   design = "systematic", samplers = numeric(0),
-  line.length = numeric(0), effort.allocation = numeric(0),
-  design.angle = 0, spacing = numeric(0), edge.protocol = "minus",
-  bounding.shape = "rectangle", truncation = 1, coverage.grid = NULL)
+  line.length = numeric(0), seg.length = numeric(0),
+  effort.allocation = numeric(0), design.angle = 0,
+  spacing = numeric(0), edge.protocol = "minus",
+  seg.threshold = numeric(0), bounding.shape = "rectangle",
+  truncation = 1, coverage.grid = NULL)
 }
 \arguments{
 \item{region}{an object of class Region defining the survey region.}
@@ -16,35 +18,47 @@ make.design(region = make.region(), transect.type = "line",
 \item{transect.type}{character variable specifying either "line" or "point"}
 
 \item{design}{a character variable describing the type of design. Either "random",
-"systematic", "eszigzag" (equal-spaced zigzag) or "eszigzagcom" (equal spaced zigzag with complementary lines). See details for more information.}
+"systematic", "eszigzag" (equal-spaced zigzag), "eszigzagcom" (equal spaced zigzag
+with complementary lines) or "segmentedgrid". See details for more information.}
 
 \item{samplers}{the number of samplers you wish the design to generate
 (note that the number actually generated may differ slightly due to the
-shape of the study region for some designs). This may be one value of a value
-per strata.}
+shape of the study region for some designs). This may be one value or a value
+for each stratum.}
 
 \item{line.length}{the total line length you desire or a vector of line lengths
 the same length as the number of strata.}
 
+\item{seg.length}{the length of the line transect segments for a segmented grid
+design.}
+
 \item{effort.allocation}{numeric values used to indicate the proportion of effort
 to be allocated to each strata from number of samplers or line length. If length is
 0 (the default) and only a total line length or total number of samplers is supplied,
-effort allocated based on stratum area.}
+effort is allocated based on stratum area.}
 
 \item{design.angle}{numeric value detailing the angle of the design. Can provide
 multiple values relating to strata. The use of the angle varies with design, it
 can be either the angle of the grid of points, the angle of lines or the design
-axis for the zigzag design. See details.}
+axis for the zigzag design. See details. In addition, a value of -1 will cause a
+random design angle to be generated.}
 
-\item{spacing}{used by systematic designs, numeric value to define spacing
-between transects. Can be a vector of values with one value per strata.}
+\item{spacing}{used by systematic designs, numeric value(s) to define spacing
+between transects. Can be a vector of values with one value per stratum.}
 
 \item{edge.protocol}{character value indicating whether a "plus" sampling or
-"minus" sampling protocol is used.}
+"minus" sampling protocol is used. See details.}
+
+\item{seg.threshold}{this is a percentage threshold value applicable to segmented
+grid designs controlling which partial segments are discarded around the survey
+region boundary. By default, the value of 50, means that only segments that are
+more than half inside the survey region will be retained. To retain all segments,
+no matter how small they are when clipped to the survey region boundary set this
+value to 0.}
 
 \item{bounding.shape}{only applicable to zigzag designs. A character value saying
 whether the zigzag transects should be generated using a minimum bounding
-"rectangle" or a "convex hull".}
+"rectangle" or a "convex hull". The default is a minimum bounding rectangle.}
 
 \item{truncation}{A single numeric value describing the longest distance at which
 an object may be observed. Truncation distance is constant across strata.}
@@ -53,7 +67,8 @@ an object may be observed. Truncation distance is constant across strata.}
 running the coverage simulation.}
 }
 \value{
-object of a class which inherits from class Survey.Design
+object of a class which inherits from class Survey.Design either
+Line.Transect.Design or Point.Transect.Design
 }
 \description{
 Creates a description of a survey design. Designs may use different
@@ -61,6 +76,18 @@ types of either point or line transect designs across strata but cannot mix
 point and line transect design types within a single design object.
 }
 \details{
+\strong{Plus versus Minus Sampling}
+If you choose for your design to use a minus sampling strategy then transects will
+only be generated within the survey region and will give lower coverage around the
+edge of the survey region. Plus sampling generates transects within an area
+greater than the study region. To do this \pkg{dssd} first puts a buffer around the
+study region before generating the transects within the buffered region. The width
+of the buffer is the truncation distance supplies by the user. Plus sampling
+helps to ensure more even coverage around the edge of the study area. See
+\emph{Buckland et. al, 2001} "Introduction to Distance Sampling" for information
+on when to use plus versus minus sampling.
+
+\strong{Point Transect Designs}
 For point transect designs the user may either specify "random" or
 "systematic" for the design argument. If the user specifies "random", they
 should also provide a value for effort detailing the number of point transects
@@ -75,29 +102,35 @@ Optionally the user may select a design.angle. For both random and systematic
 point transect designs the user may select either a minus or plus sampling edge
 protocol.
 
+\strong{Line Transect Designs:}
 For line transect designs the user may either specify "random" (randomly
 placed full width lines), "systematic" (systematically placed full width lines),
-"eszigzag" (equally spaced zigzag lines) or "eszigzagcom" (two sets of complementary
-equally spaced zigzag lines). If the user specifies "random", they
-should provide the either the number of samplers they wish the design to generate
-or the line length they wish to achieve, either by strata or as a total. If the
-user specifies "systematic" they should specify either the number of samplers,
-the desired line length or the spacing between lines. The design angle for these
-parallel line designs refers to the angle of the lines where 0 is a vertical line
-and moving round in a clockwise direction. If the user specifies a zigzag design they
-should specify the systematic spacing value, number of samplers or line length
-to be used and should choose between generating the design in a minimum bounding
+"eszigzag" (equally spaced zigzag lines), "eszigzagcom" (two sets of complementary
+equally spaced zigzag lines) or "segmentedgrid" (a grid of short line transect
+segments). If the user specifies "random", they should provide the either the
+number of samplers they wish the design to generate or the line length they wish
+to achieve, either by strata or as a total. If the user specifies "systematic"
+they should specify either the number of samplers, the desired line length or
+the spacing between lines. The design angle for these parallel line designs
+refers to the angle of the lines where 0 is a vertical line and moving round
+in a clockwise direction. If the user specifies a zigzag design they should
+specify the systematic spacing value, number of samplers or line length to be
+used and should choose between generating the design in a minimum bounding
 rectangle or a convex hull. The default is minimum bounding rectangle which gives
-more even coverage but the convex hull is generally more efficient. The designs
-may be generated using plus or minus sampling protocols. Similar to the point
-transect designs different values may be specified for each strata for all of
-the above options. The design angle for the zigzag designs refers to the angle
-of a line which would run through the middle of each zigzag transect if the
-zigzags were to be generated within a rectangle. The design angle for zigzags
-should usually run along the longest dimension of the study region.
+more even coverage but the convex hull is generally more efficient. A segmented
+grid design may be generated using the either the number of samplers or total
+line length, combined with a value for segment length. Alternatively the user
+may specify a values for spacing and segment length. The segmented grid design
+also uses the segment threshold argument. All the designs may be generated
+using plus or minus sampling protocols. Similar to the point transect designs
+different values may be specified for each strata for all of the above options.
+The design angle for the zigzag designs refers to the angle of a line which
+would run through the middle of each zigzag transect if the zigzags were to
+be generated within a rectangle. The design angle for zigzags should usually
+run along the longest dimension of the study region.
 
-See the Multi Strata Vignette for more complex examples of defining designs
-across multiple strata.
+See the Getting Started Vignette and the Multiple Strata in dssd Vignette for
+example designs.
 }
 \examples{
 #Point transect example
@@ -129,6 +162,9 @@ design <- run.coverage(design, reps = 500)
 plot(design)
 # Display the design statistics
 design
+#Extract coverage scores
+coverage.scores <- get.coverage(design)
+hist(coverage.scores)
 
 #Multi-strata line transect example
 shapefile.name <- system.file("extdata", "AreaRProjStrata.shp", package = "dssd")
@@ -162,6 +198,9 @@ design <- run.coverage(design, reps = 500)
 plot(design)
 # Display the design statistics
 design
+#Extract coverage scores for the first strata
+coverage.scores <- get.coverage(design, strata.id = 1)
+summary(coverage.scores)
 }
 
 # Fast running example for CRAN testing purposes

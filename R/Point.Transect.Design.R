@@ -11,8 +11,8 @@
 #' @title S4 Class "Point.Transect.Design"
 #' @section Methods:
 #' \describe{
-#'  \item{\code{generate.transects}}{\code{signature=(object = "Point.Transect.Design", ...)}:
-#'  generates a set of transects from a shapefile.}
+#'  \item{\code{generate.transects}}{\code{signature=(object = "Point.Transect.Design", quiet = FALSE,  ...)}:
+#'  generates a set of transects from the design.}
 #' }
 #' @keywords classes
 #' @seealso \code{\link{make.design}}
@@ -70,6 +70,13 @@ setMethod(
       strata.names <- region@region.name
       strata.no <- 1
     }
+    #Store original angles
+    orig.angles <- object@design.angle
+    #Make sure these are restored incase of a crash
+    on.exit(object@design.angle <- orig.angles)
+    #Now generate random design angles
+    n <- length(which(object@design.angle == -1))
+    object@design.angle <- ifelse(object@design.angle == -1, runif(n,0,179.9999), object@design.angle)
     #Get a vector of designs
     if(length(object@design) == 1){
       object@design <- rep(object@design, strata.no)
@@ -158,8 +165,10 @@ setMethod(
       if(!quiet){
         warning("No samplers generated.", immediate. = T, call. = FALSE)
       }
+      index <- numeric(0)
+    }else{
+      index <- which(sapply(transects, Negate(is.null)))
     }
-    index <- which(sapply(transects, Negate(is.null)))
     cov.areas <- sampler.count <- numeric(0)
     transect.count <- 0
     strata.id <- character(0)
@@ -184,6 +193,12 @@ setMethod(
     }else{
       all.transects <- sf::st_sf(data.frame(transect = 1:transect.count, strata = strata.id, geom = temp))
       all.polys <- sf::st_sf(data.frame(transect = 1:transect.count, strata = strata.id, geom = temp.poly))
+    }
+    #Set crs
+    region.crs <- sf::st_crs(region@region)
+    sf::st_crs(all.transects) <- region.crs
+    if(!for.coverage){
+      sf::st_crs(all.polys) <- region.crs
     }
     #Make a survey object
     survey <- new(Class="Point.Transect", design = object@design, points = all.transects, samp.count = sampler.count, effort.allocation = object@effort.allocation, spacing = spacing, design.angle = object@design.angle, edge.protocol = object@edge.protocol, cov.area = cov.areas, cov.area.polys = all.polys, strata.area = region@area, strata.names <- strata.names)

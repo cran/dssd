@@ -10,7 +10,9 @@ make.coverage(region = make.region(), spacing = numeric(0),
 \arguments{
 \item{region}{the region name}
 
-\item{spacing}{spacing to be used to create the coverage grid}
+\item{spacing}{spacing to be used to create the coverage grid. If
+spacing is specified then any value supplied for n.grid.points will
+be ignored.}
 
 \item{n.grid.points}{the desired number of grid points (note that
 the exact number generated may differ slightly depending on the
@@ -30,7 +32,7 @@ region <- make.region()
 cover <- make.coverage(region, spacing = 50)
 plot(region, cover)
 # Create coverage grid by approx number of grid points
-cover <- make.coverage(region, n.grid.points = 100)
+cover <- make.coverage(region, n.grid.points = 1000)
 plot(region, cover)
 }
 

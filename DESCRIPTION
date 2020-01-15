@@ -1,10 +1,10 @@
 Package: dssd
-Imports: sf, plot3D, methods
+Imports: sf, plot3D, rgdal, lwgeom, methods
 Suggests: knitr, rmarkdown, tibble, testthat
 VignetteBuilder: knitr
 Type: Package
 Title: Distance Sampling Survey Design
-Version: 0.1.0
+Version: 0.2.0
 Author: Laura Marshall <lhm@st-andrews.ac.uk>
 Maintainer: Laura Marshall <lhm@st-andrews.ac.uk>
 Description: Creates survey designs for distance sampling surveys. These
@@ -25,14 +25,17 @@ Collate: 'Class.Constructors.R' 'Coverage.Grid.R' 'Transect.R'
         'Region.R' 'generic.functions.R' 'Survey.Design.R'
         'Line.Transect.Design.R' 'Line.Transect.R'
         'Point.Transect.Design.R' 'Point.Transect.R'
+        'Segment.Transect.Design.R' 'Segment.Transect.R'
         'calc.region.width.R' 'calculate.trackline.pl.R'
-        'calculate.trackline.zz.R' 'calculate.trackline.zzcom.R'
-        'check.line.design.R' 'check.point.design.R' 'check.shape.R'
+        'calculate.trackline.segl.R' 'calculate.trackline.zz.R'
+        'calculate.trackline.zzcom.R' 'check.line.design.R'
+        'check.point.design.R' 'check.shape.R' 'dssd-package.R'
         'generate.eqspace.zigzags.R' 'generate.parallel.lines.R'
-        'generate.random.points.R' 'generate.systematic.points.R'
-        'get.intersection.points.R' 'run.coverage.R'
-        'write.transects.R'
+        'generate.random.points.R' 'generate.segmented.grid.R'
+        'generate.systematic.points.R' 'get.intersection.points.R'
+        'line.coords.as.dataframe.R' 'point.coords.as.dataframe.R'
+        'run.coverage.R' 'write.transects.R'
 NeedsCompilation: no
-Packaged: 2019-08-02 22:14:36 UTC; lhm
+Packaged: 2020-01-15 12:24:40 UTC; lhm
 Repository: CRAN
-Date/Publication: 2019-08-05 13:00:02 UTC
+Date/Publication: 2020-01-15 12:40:02 UTC

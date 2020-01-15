@@ -1,5 +1,24 @@
-DSsim 0.1.0
------------
+dssd 0.2.0
+----------
+
+New Features
+
+ * Segmented grid design
+ * Writes transects to gpx, csv and txt file
+ * Multi-strata vignette
+ * Coverage score statistics by stratum
+ * Option to run coverage simulation without progress counter output
+ * Plot and access coverage scores by stratum
+ * Use -1 to set a randomly generated design angle
+ * Updated Documentation
+
+Bug Fixes
+
+ * Coordinate reference systems now stored in coverage and transect objects
+ * Fixed invalid shapefiles: AreaRStrata and AreaRProjStrata
+
+dssd 0.1.0
+----------
 
 Introducing the new Distance Sampling Survey Design package!
 
@@ -10,7 +29,7 @@ dssd implements the following designs:
  * Line transects: Systematic parallel lines with a random start
  * Line transects: Equal spaced zigzags with a random start
  * Line transects: Equal spaced zigzags with complementary set of zigzags
- 
+
 dssd also implements the following feature options:
  * Ability to vary design angle
  * Survey generation by number of samplers, spacing or line length (can generate by different criteria in each strata)
