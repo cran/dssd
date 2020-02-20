@@ -5,11 +5,11 @@ region <- make.region(region.name = "study area",
                       shape = shapefile.name)
 plot(region)
 
-## ----covergrid-----------------------------------------------------------
+## ----covergrid----------------------------------------------------------------
 cover <- make.coverage(region,
                        n.grid.points = 1000)
 
-## ----design--------------------------------------------------------------
+## ----design-------------------------------------------------------------------
 design <- make.design(region = region, 
                       design = "systematic",
                       line.length = 1300,
@@ -19,7 +19,7 @@ design <- make.design(region = region,
                       coverage.grid = cover)
 
 
-## ----seed, echo=FALSE----------------------------------------------------
+## ----seed, echo=FALSE---------------------------------------------------------
 set.seed(474)
 
 ## ----transects, fig.align='center', fig.cap="Figure 2: An example set of transects generated from the design plotted within the study region.", fig.width=6, fig.height=4----
@@ -30,20 +30,20 @@ plot(region, transects)
 ## ----coveredarea, fig.align='center', fig.cap="Figure 3: An example set of transects generated from the design along with the covered area shown by the black rectangles around the transects.", fig.width=6, fig.height=4----
 plot(region, transects, covered.area = TRUE)
 
-## ----coverage, eval=FALSE------------------------------------------------
+## ----coverage, eval=FALSE-----------------------------------------------------
 #  design <- run.coverage(design, reps = 999)
 
-## ----coverage2, echo=FALSE-----------------------------------------------
+## ----coverage2, echo=FALSE----------------------------------------------------
 filename <- system.file("extdata/vigresults", "GSdesign.robj", package = "dssd")
 load(filename)
 
 ## ----coverage3, fig.align='center', fig.cap="Figure 4: The coverage grid", fig.width=6, fig.height=4----
 plot(design, subtitle = "Systematic Parallel, line.length = 1300km")
 
-## ----designstats2, eval = FALSE------------------------------------------
+## ----designstats2, eval = FALSE-----------------------------------------------
 #  design
 
-## ----designstats, echo = FALSE-------------------------------------------
+## ----designstats, echo = FALSE------------------------------------------------
 ops <- options(warn = -1)
 design
 options <- ops

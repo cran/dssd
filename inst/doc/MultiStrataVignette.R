@@ -1,10 +1,10 @@
-## ----setup, include=FALSE------------------------------------------------
+## ----setup, include=FALSE-----------------------------------------------------
 knitr::opts_chunk$set(echo = TRUE)
 
-## ----setseed, echo=FALSE-------------------------------------------------
+## ----setseed, echo=FALSE------------------------------------------------------
 set.seed(724)
 
-## ----libload-------------------------------------------------------------
+## ----libload------------------------------------------------------------------
 library(dssd)
 
 ## ----scansIIarea, fig.width=6, fig.height = 5, fig.align='center', fig.cap="Figure 2: Plot of an example study area comprising of 2 strata, a northern stratum and a southern stratum"----
@@ -19,7 +19,7 @@ cover <- make.coverage(region,
                        n.grid.points = 1000)
 plot(region, cover)
 
-## ----setseed3, echo=FALSE------------------------------------------------
+## ----setseed3, echo=FALSE-----------------------------------------------------
 set.seed(937)
 
 ## ----defaultdesign, fig.asp = 1, fig.width=6, fig.align='center', fig.cap="Figure 4: Survey generated from on a multi-strata default design with stratum specific design angles. "----
@@ -34,7 +34,7 @@ default.design <- make.design(region = region,
 transects <- generate.transects(default.design)
 plot(region, transects, lwd = 1.5, col = 4)
 
-## ----defaultdesign_survey------------------------------------------------
+## ----defaultdesign_survey-----------------------------------------------------
 transects
 
 ## ----zz_sp, fig.asp = 1, fig.width=6, fig.align='center', fig.cap="Figure 5: Example survey from a mixed-type design with systematic parallel lines in the southern strata and an equal spaced zigzag designs in the northern strata."----
@@ -50,7 +50,7 @@ design <- make.design(region = region,
 transects <- generate.transects(design)
 plot(region, transects, lwd = 1.5, col = 4)
 
-## ----zz_sp_covnoeval, eval=FALSE-----------------------------------------
+## ----zz_sp_covnoeval, eval=FALSE----------------------------------------------
 #  design <- run.coverage(design, reps = 1000)
 #  plot(design)
 
@@ -59,7 +59,7 @@ obj.name <- system.file("extdata/vigresults", "design_zz_sp.robj", package = "ds
 load(obj.name)
 plot(design)
 
-## ----zz_sp_cov3----------------------------------------------------------
+## ----zz_sp_cov3---------------------------------------------------------------
 design
 
 ## ----seg_design, fig.asp = 1, fig.width=6, fig.align='center', fig.cap="Figure 7: A single survey generated from a segmented grid design with different design parameters in each stratum."----
@@ -76,7 +76,7 @@ design <- make.design(region = region,
 transects <- generate.transects(design)
 plot(region, transects, lwd = 1.5, col = 4)
 
-## ----seg_design2, eval = FALSE-------------------------------------------
+## ----seg_design2, eval = FALSE------------------------------------------------
 #  design <- run.coverage(design, reps = 1000)
 #  plot(design)
 
@@ -91,7 +91,7 @@ plot(design, strata.id = 1, subtitle = "Coverage Northern Strata")
 ## ----seg_design5, fig.asp = 1, fig.width=4.5, fig.align='center', fig.cap="Figure 10: Coverage scores plotted only for the southern stratum"----
 plot(design, strata.id = 2, subtitle = "Coverage Southern Strata")
 
-## ----setseed2, echo=FALSE------------------------------------------------
+## ----setseed2, echo=FALSE-----------------------------------------------------
 set.seed(273)
 
 ## ----point_region, fig.align='center', fig.width=6, fig.height = 4.5, fig.cap = "Figure 11: Study region depicting an area of forest between Dundee and St Andrews in Scotland. It comprises of a main stratum and a Morton Loch stratum which forms part of a nature reserve in the area."----
@@ -125,7 +125,7 @@ design.tm <- make.design(region = region.tm,
 transects.tm <- generate.transects(design.tm)
 plot(region.tm, transects.tm, lwd = 1.5, col = 4)
 
-## ----point_eg2-----------------------------------------------------------
+## ----point_eg2----------------------------------------------------------------
 transects.tm
 
 ## ----makeown, fig.asp = 1, fig.width=6, fig.align='center', fig.cap="Figure 13: A single study region with multiple polygon parts."----
