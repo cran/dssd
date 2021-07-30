@@ -51,3 +51,15 @@ options <- ops
 ## ----coverage4, fig.align='center', fig.cap="Figure 5: Histogram of coverage scores", fig.width=6, fig.height=4----
 hist(get.coverage(design), xlab = "Coverage Scores", main = "Histogram of Coverage Scores")
 
+## ----exportshp----------------------------------------------------------------
+# File destination - .txt file
+file.path <- paste0(tempdir(), "/", "transects.txt")
+# Write to .txt file
+write.transects(transects, dsn = file.path)
+
+
+# File destination - .shp file
+file.path <- paste0(tempdir(), "/", "transects.shp")
+# Write to shapefile
+write.transects(transects, dsn = file.path)
+

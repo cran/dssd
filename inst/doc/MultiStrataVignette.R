@@ -17,7 +17,7 @@ plot(region)
 ## ----covergrid, fig.width=6, fig.align='center', fig.asp=1, fig.cap="Figure 3: Coverage grid with approximately 1000 grid points."----
 cover <- make.coverage(region,
                        n.grid.points = 1000)
-plot(region, cover)
+plot(region, cover, cex = 0.7)
 
 ## ----setseed3, echo=FALSE-----------------------------------------------------
 set.seed(937)
@@ -32,7 +32,7 @@ default.design <- make.design(region = region,
                               truncation = 2000, 
                               coverage.grid = cover)
 transects <- generate.transects(default.design)
-plot(region, transects, lwd = 1.5, col = 4)
+plot(region, transects, lwd = 0.8, col = "blue")
 
 ## ----defaultdesign_survey-----------------------------------------------------
 transects
@@ -48,7 +48,7 @@ design <- make.design(region = region,
                               truncation = 2000,
                               coverage.grid = cover)
 transects <- generate.transects(design)
-plot(region, transects, lwd = 1.5, col = 4)
+plot(region, transects, lwd = 0.8, col = "blue")
 
 ## ----zz_sp_covnoeval, eval=FALSE----------------------------------------------
 #  design <- run.coverage(design, reps = 1000)
@@ -74,7 +74,7 @@ design <- make.design(region = region,
                       truncation = 3000,
                       coverage.grid = cover)
 transects <- generate.transects(design)
-plot(region, transects, lwd = 1.5, col = 4)
+plot(region, transects, lwd = 0.8, col = "blue")
 
 ## ----seg_design2, eval = FALSE------------------------------------------------
 #  design <- run.coverage(design, reps = 1000)
@@ -123,7 +123,7 @@ design.tm <- make.design(region = region.tm,
                       truncation = 100,
                       coverage.grid = cover.tm)
 transects.tm <- generate.transects(design.tm)
-plot(region.tm, transects.tm, lwd = 1.5, col = 4)
+plot(region.tm, transects.tm, lwd = 0.8, col = "blue")
 
 ## ----point_eg2----------------------------------------------------------------
 transects.tm

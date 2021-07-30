@@ -41,8 +41,9 @@ the same length as the number of strata.}
 \item{seg.length}{the length of the line transect segments for a segmented grid
 design.}
 
-\item{effort.allocation}{numeric values used to indicate the proportion of effort
-to be allocated to each strata from number of samplers or line length. If length is
+\item{effort.allocation}{Used for multi-strata regions where only a total effort
+value is provided. This numeric argument should have one value per stratum indicating
+the proportion of the total effort to allocate to that stratum. If length is
 0 (the default) and only a total line length or total number of samplers is supplied,
 effort is allocated based on stratum area.}
 
@@ -67,7 +68,7 @@ value to 0.}
 
 \item{bounding.shape}{only applicable to zigzag designs. A character value saying
 whether the zigzag transects should be generated using a minimum bounding
-"rectangle" or a "convex hull". The default is a minimum bounding rectangle.}
+"rectangle" or "convex.hull". The default is a minimum bounding rectangle.}
 
 \item{truncation}{A single numeric value describing the longest distance at which
 an object may be observed. Truncation distance is constant across strata.}
@@ -138,6 +139,28 @@ would run through the middle of each zigzag transect if the zigzags were to
 be generated within a rectangle. The design angle for zigzags should usually
 run along the longest dimension of the study region.
 
+NOTE: If multiple global design effort arguments are supplied (i.e. spacing,
+samplers, line.length) then only the first of spacing then line.length then
+number of samplers will be used. The other values provided will be discarded.
+Different design effort arguments may supplied for different strata. This is
+achieved by supplying vectors of numeric values for each of the desired
+effort measures, there should be 1 value for each stratum. A value indicates
+the effort for that stratum and NA's should be used to ensure that only one
+measure of effort is defined for each stratum.
+
+\strong{Effort Allocation:}
+For multi-strata designs users are able to define a single global effort value,
+for example number of samplers or line length, and allocate proportions of it
+to each stratum using the effort.allocation argument. If a global effort value
+is supplied and effort.allocation is not defined then effort is assigned
+based on stratum area. This should lead to a design which is at least
+approximately equal effort across strata. In the case where all strata use the
+same systematic design then in the absence of effort.allocation the spacing will
+be calculated globally and exactly equal effort will be achieved. In the case
+where different designs are chosen for different strata or a non-systematic
+design is selected then effort and spacing values will be calculated at the
+stratum level and this can lead to some variations in coverage between strata.
+
 See the Getting Started Vignette and the Multiple Strata in dssd Vignette for
 example designs.
 }
@@ -146,10 +169,11 @@ example designs.
 shapefile.name <- system.file("extdata", "TrackExample.shp", package = "dssd")
 region <- make.region(region.name = "study area",
                      shape = shapefile.name)
+
 \donttest{
-# Generate coverage grid
+# Generate coverage grid (spacing quite sparse for speed)
 cover <- make.coverage(region,
-                       n.grid.points = 500)
+                       n.grid.points = 250)
 
 # Define design
 design <- make.design(region = region,
@@ -165,8 +189,10 @@ design <- make.design(region = region,
 survey <- generate.transects(design)
 plot(region, survey, covered.area = TRUE)
 
-# Warning! this will take some time to run
-design <- run.coverage(design, reps = 500)
+# Note, the number of reps here has been set to 5 to avoid lengthy run-times,
+# however, the reps should be at least 100 for an idea of design statistics
+# (i.e. trackline lengths) and 500 + to give a good odea of coverage.
+design <- run.coverage(design, reps = 5)
 # Plot the coverage
 plot(design)
 # Display the design statistics
@@ -201,13 +227,15 @@ design <- make.design(region = region,
 survey <- generate.transects(design)
 plot(region, survey, covered.area = TRUE)
 
-# Warning! this will quite a long time to run as it is a complex example.
-design <- run.coverage(design, reps = 500)
+# Note, the number of reps here has been set to 5 to avoid lengthy run-times,
+# however, the reps should be at least 100 for an idea of design statistics
+# (i.e. trackline lengths) and 500 + to give a good odea of coverage.
+design <- run.coverage(design, reps = 5)
 # Plot the coverage
 plot(design)
 # Display the design statistics
 design
-#Extract coverage scores for the first strata
+# Extract coverage scores for the first strata
 coverage.scores <- get.coverage(design, strata.id = 1)
 summary(coverage.scores)
 }

@@ -159,6 +159,28 @@ make.region <- function(region.name = "region",
 #' be generated within a rectangle. The design angle for zigzags should usually
 #' run along the longest dimension of the study region.
 #'
+#' NOTE: If multiple global design effort arguments are supplied (i.e. spacing,
+#' samplers, line.length) then only the first of spacing then line.length then
+#' number of samplers will be used. The other values provided will be discarded.
+#' Different design effort arguments may supplied for different strata. This is
+#' achieved by supplying vectors of numeric values for each of the desired
+#' effort measures, there should be 1 value for each stratum. A value indicates
+#' the effort for that stratum and NA's should be used to ensure that only one
+#' measure of effort is defined for each stratum.
+#'
+#' \strong{Effort Allocation:}
+#' For multi-strata designs users are able to define a single global effort value,
+#' for example number of samplers or line length, and allocate proportions of it
+#' to each stratum using the effort.allocation argument. If a global effort value
+#' is supplied and effort.allocation is not defined then effort is assigned
+#' based on stratum area. This should lead to a design which is at least
+#' approximately equal effort across strata. In the case where all strata use the
+#' same systematic design then in the absence of effort.allocation the spacing will
+#' be calculated globally and exactly equal effort will be achieved. In the case
+#' where different designs are chosen for different strata or a non-systematic
+#' design is selected then effort and spacing values will be calculated at the
+#' stratum level and this can lead to some variations in coverage between strata.
+#'
 #' See the Getting Started Vignette and the Multiple Strata in dssd Vignette for
 #' example designs.
 #'
@@ -175,8 +197,9 @@ make.region <- function(region.name = "region",
 #' the same length as the number of strata.
 #' @param seg.length the length of the line transect segments for a segmented grid
 #' design.
-#' @param effort.allocation numeric values used to indicate the proportion of effort
-#' to be allocated to each strata from number of samplers or line length. If length is
+#' @param effort.allocation Used for multi-strata regions where only a total effort
+#' value is provided. This numeric argument should have one value per stratum indicating
+#' the proportion of the total effort to allocate to that stratum. If length is
 #' 0 (the default) and only a total line length or total number of samplers is supplied,
 #' effort is allocated based on stratum area.
 #' @param design.angle numeric value detailing the angle of the design. Can provide
@@ -196,7 +219,7 @@ make.region <- function(region.name = "region",
 #' value to 0.
 #' @param bounding.shape only applicable to zigzag designs. A character value saying
 #' whether the zigzag transects should be generated using a minimum bounding
-#' "rectangle" or a "convex hull". The default is a minimum bounding rectangle.
+#' "rectangle" or "convex.hull". The default is a minimum bounding rectangle.
 #' @param truncation A single numeric value describing the longest distance at which
 #' an object may be observed. Truncation distance is constant across strata.
 #' @param coverage.grid An object of class Coverage.Grid for use when
@@ -210,10 +233,11 @@ make.region <- function(region.name = "region",
 #' shapefile.name <- system.file("extdata", "TrackExample.shp", package = "dssd")
 #' region <- make.region(region.name = "study area",
 #'                      shape = shapefile.name)
+#'
 #' \donttest{
-#' # Generate coverage grid
+#' # Generate coverage grid (spacing quite sparse for speed)
 #' cover <- make.coverage(region,
-#'                        n.grid.points = 500)
+#'                        n.grid.points = 250)
 #'
 #' # Define design
 #' design <- make.design(region = region,
@@ -229,8 +253,10 @@ make.region <- function(region.name = "region",
 #' survey <- generate.transects(design)
 #' plot(region, survey, covered.area = TRUE)
 #'
-#' # Warning! this will take some time to run
-#' design <- run.coverage(design, reps = 500)
+#' # Note, the number of reps here has been set to 5 to avoid lengthy run-times,
+#' # however, the reps should be at least 100 for an idea of design statistics
+#' # (i.e. trackline lengths) and 500 + to give a good odea of coverage.
+#' design <- run.coverage(design, reps = 5)
 #' # Plot the coverage
 #' plot(design)
 #' # Display the design statistics
@@ -265,13 +291,15 @@ make.region <- function(region.name = "region",
 #' survey <- generate.transects(design)
 #' plot(region, survey, covered.area = TRUE)
 #'
-#' # Warning! this will quite a long time to run as it is a complex example.
-#' design <- run.coverage(design, reps = 500)
+#' # Note, the number of reps here has been set to 5 to avoid lengthy run-times,
+#' # however, the reps should be at least 100 for an idea of design statistics
+#' # (i.e. trackline lengths) and 500 + to give a good odea of coverage.
+#' design <- run.coverage(design, reps = 5)
 #' # Plot the coverage
 #' plot(design)
 #' # Display the design statistics
 #' design
-#' #Extract coverage scores for the first strata
+#' # Extract coverage scores for the first strata
 #' coverage.scores <- get.coverage(design, strata.id = 1)
 #' summary(coverage.scores)
 #' }
@@ -304,11 +332,17 @@ make.design <- function(region = make.region(), transect.type = "line", design =
     #by default makes a grid with approx 1000 points
     coverage.grid <- new("Coverage.Grid", grid = list(), spacing = numeric(0))
   }
-  #Check design arguments
+  # Pre-creation checks - more checks are performed later in check.line.design / check.point.design
+  if(!is.numeric(effort.allocation)){
+    stop("Effort allocation values must be numeric.", call. = FALSE)
+  }
+  if(!is.numeric(truncation)){
+    stop("Truncation value must be numeric.", call. = FALSE)
+  }
+  if(!is.numeric(design.angle)){
+    stop("Design angle value(s) must be numeric.", call. = FALSE)
+  }
   if(transect.type %in% c("Line", "line", "Line Transect", "line transect")){
-    if(length(samplers) == 0 && length(line.length) == 0 && length(spacing) == 0){
-      samplers = 20
-    }
     #Create line transect object
     if(any(design == "segmentedgrid")){
       if(length(seg.threshold) == 0){
@@ -319,25 +353,9 @@ make.design <- function(region = make.region(), transect.type = "line", design =
       design <- new(Class="Line.Transect.Design", region, truncation, design, line.length, effort.allocation, spacing, samplers, design.angle, edge.protocol, bounding.shape, coverage.grid)
     }
   }else if(transect.type %in% c("Point", "point", "Point Transect", "point transect")){
-    if(all(design == "random")){
-      if(length(samplers) == 0){
-        samplers = 20
-        spacing = numeric(0)
-      }
-    }else if(all(design == "systematic")){
-      if(length(samplers) == 0 && length(spacing) == 0){
-        samplers = 20
-      }
-    }else if(all(design %in% c("random", "systematic"))){
-      if(length(samplers) == 0){
-        samplers = 20
-      }
-    }else{
-      stop("Point transect design not recognised, please choose from 'random' or 'systematic", call. = FALSE)
-    }
-    #Check values
-    if(any(any(na.omit(samplers) < 0) || any(na.omit(spacing) < 0))){
-      stop("Negative values were used to specify effort.", call. = FALSE)
+    # Check line length not supplied
+    if(length(line.length) > 0){
+      warning("Argument line.length not applicable to point transect designs.", immediate. = TRUE, call. = FALSE)
     }
     #Create point transect object
     design <- new(Class="Point.Transect.Design", region, truncation, design, spacing, samplers, effort.allocation, design.angle, edge.protocol, coverage.grid)
@@ -370,19 +388,9 @@ make.design <- function(region = make.region(), transect.type = "line", design =
 #' @export
 #' @author Laura Marshall
 #' @examples
-#' \donttest{
-#' # This example will take a bit of time to generate
-#' # A coverage grid in a rectangular region of 2000 x 500
-#' region <- make.region()
-#' cover <- make.coverage(region, spacing = 50)
-#' plot(region, cover)
-#' # Create coverage grid by approx number of grid points
-#' cover <- make.coverage(region, n.grid.points = 1000)
-#' plot(region, cover)
-#' }
-#'
-#' # Fast running example for CRAN testing purposes
-#' # This spacing is too sparse to assess coverage in a real example
+#' # Fast running example, please note to more accurately assess coverage
+#' # the spacing should be reduced. Spacings of between 20 and 50 will allow
+#' # a better assessment of coverage to be achieved.
 #' region <- make.region()
 #' cover <- make.coverage(region, spacing = 250)
 #' plot(region, cover)
