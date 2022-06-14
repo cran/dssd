@@ -1,6 +1,6 @@
-ede7a5ca2f01f0e256ee0295cc820f4b *DESCRIPTION
+4be376467c81c961e8d6d38413c115fa *DESCRIPTION
 5d3704015c9f50fcaaf0c4c5ca06db5e *NAMESPACE
-fa8ce5842a2c089c673d9853feae3e99 *NEWS
+15d93d85db1901fc8aec1fcdead64bf4 *NEWS
 a9f753a4fca218d1ead76b0dd2b71d8a *R/Class.Constructors.R
 048d23f67c3e9447399dd278edc9c4e1 *R/Coverage.Grid.R
 a59576dbeebbbeb4bed70fbd01f1cdb4 *R/Line.Transect.Design.R
@@ -38,10 +38,10 @@ dcfe1aaeeafe123cc5f002218adc32de *R/generic.functions.R
 2bfbd42267448d740042031c6ce887ad *build/vignette.rds
 a5d62001886b55eb296cad1f8b0f69cd *inst/doc/GettingStarted.R
 be26bf99ac35e3595b9580a736a60a7c *inst/doc/GettingStarted.Rmd
-0c693a5562e47ffb240d874b9b1c853d *inst/doc/GettingStarted.html
+1389b69ecc94da2c97722b6774c09fa4 *inst/doc/GettingStarted.html
 cd917bd4d0da5c665ed3ffeccf2a31ff *inst/doc/MultiStrataVignette.R
 ce9f695166d042bf1ad57d41a63242c6 *inst/doc/MultiStrataVignette.Rmd
-5640c1bf448256ed886b63a36a7e2b2c *inst/doc/MultiStrataVignette.html
+a7682e86c208d4b6b5ecc78ff7e07364 *inst/doc/MultiStrataVignette.html
 0a4a84de203619c0277d0a80c0c3f4f4 *inst/extdata/AreaRProjStrata.dbf
 fff91b8c4b010a8a5a8e8d058e1978e9 *inst/extdata/AreaRProjStrata.prj
 329280d8681ea09e2be468bcc7ede37f *inst/extdata/AreaRProjStrata.shp
@@ -99,9 +99,9 @@ fa53e3bc198bddff1333c8f28400e294 *man/plot.Region-methods.Rd
 95544684db3691970b44b416dc9d8e02 *tests/testthat/test-check_CalcEffort.R
 aa750aa4a412a50f9431098621c92250 *tests/testthat/test-check_DesignParams.R
 5e3e7f55efead16452bc999dc3f56ec6 *tests/testthat/test-check_Designs.R
-be0958514636f4e3afb7af547adcfdb9 *tests/testthat/test-check_SegDesign.R
+a929e4bc8a01d0a18637ae7aacc1df87 *tests/testthat/test-check_SegDesign.R
 a401d8ae92bfd2859c3a456d9e053a31 *tests/testthat/test-check_UserInput.R
-cb3daf6955311c5d64a4b92666aeb4ea *tests/testthat/test-x_seed_tests.R
+9b22c3908717df2445419eb67e112928 *tests/testthat/test-x_seed_tests.R
 be26bf99ac35e3595b9580a736a60a7c *vignettes/GettingStarted.Rmd
 ce9f695166d042bf1ad57d41a63242c6 *vignettes/MultiStrataVignette.Rmd
 dc36b8d2625fed1bc563cb35d005a8cc *vignettes/images/ComZigzag.jpeg
