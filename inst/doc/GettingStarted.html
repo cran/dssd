@@ -12,7 +12,7 @@
 
 <meta name="author" content="L Marshall" />
 
-<meta name="date" content="2022-06-14" />
+<meta name="date" content="2022-08-30" />
 
 <title>Getting Started with dssd</title>
 
@@ -122,13 +122,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   for (var i = 0; i < sheets.length; i++) {
     if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
     try { var rules = sheets[i].cssRules; } catch (e) { continue; }
-    for (var j = 0; j < rules.length; j++) {
+    var j = 0;
+    while (j < rules.length) {
       var rule = rules[j];
       // check if there is a div.sourceCode rule
-      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
       var style = rule.style.cssText;
       // check if color or background-color is set
-      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
       // replace div.sourceCode by a pre.sourceCode rule
       sheets[i].deleteRule(j);
       sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
@@ -356,7 +363,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <h1 class="title toc-ignore">Getting Started with dssd</h1>
 <h4 class="author">L Marshall</h4>
-<h4 class="date">2022-06-14</h4>
+<h4 class="date">2022-08-30</h4>
 
 
 
@@ -722,7 +729,7 @@ want to replace this with your own file path and name.</p>
 <span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Write to shapefile</span></span>
 <span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a><span class="fu">write.transects</span>(transects, <span class="at">dsn =</span> file.path)</span></code></pre></div>
 <pre><code>## Writing layer `transects&#39; to data source 
-##   `/var/folders/9_/crwskh4n7511pvxtgl696gz00000gr/T//Rtmpcofj3G/transects.shp&#39; using driver `ESRI Shapefile&#39;
+##   `/var/folders/9_/crwskh4n7511pvxtgl696gz00000gr/T//RtmpXgABNF/transects.shp&#39; using driver `ESRI Shapefile&#39;
 ## Writing 21 features with 2 fields and geometry type Line String.</code></pre>
 <p>You can now navigate to your saved files and view their contents.</p>
 </div>
