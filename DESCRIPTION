@@ -4,7 +4,7 @@ Suggests: knitr, rmarkdown, tibble, covr, testthat
 VignetteBuilder: knitr
 Type: Package
 Title: Distance Sampling Survey Design
-Version: 0.3.4
+Version: 1.0.0
 Authors@R: c(
   person("Laura", "Marshall", email = "lhm@st-andrews.ac.uk", role = c("aut", "cre")),
   person("Rexstad", "Eric", email = "eric.rexstad@st-andrews.ac.uk", role = "ctb"))
@@ -37,9 +37,9 @@ Collate: 'Class.Constructors.R' 'Coverage.Grid.R' 'Transect.R'
         'point.coords.as.dataframe.R' 'run.coverage.R'
         'write.transects.R'
 NeedsCompilation: no
-Packaged: 2022-08-30 13:44:27 UTC; laura
+Packaged: 2022-10-04 17:18:24 UTC; lhm
 Author: Laura Marshall [aut, cre],
   Rexstad Eric [ctb]
 Maintainer: Laura Marshall <lhm@st-andrews.ac.uk>
 Repository: CRAN
-Date/Publication: 2022-08-30 17:00:09 UTC
+Date/Publication: 2022-10-04 17:50:02 UTC

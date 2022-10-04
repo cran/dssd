@@ -21,6 +21,8 @@ set.seed(724)
 
 ## Introduction
 
+The most up-to-date copies of these vignettes can now be found on the distance sampling examples page of our website: https://examples.distancesampling.org
+
 This vignette assumes the reader is familiar with the topics covered in the getting started vignette. It expands on that content, demonstrating how to use the distance sampling survey design package, dssd [@dssd-pkg] when your study region is made up of multiple strata. This vignette will detail how you can select different designs (within the same design category, either lines or points) for each stratum and provide stratum specific design parameters. Please note that the examples provided in this vignette are designed to make the reader aware of what is possible inside the dssd package and the designs are not necessarily something that we would recommended for these example survey regions. 
 
 ## Stratified Designs - why stratify?
@@ -40,7 +42,7 @@ Finally you may wish to stratify as you plan to survey from two different platfo
 
 ### Equal Effort Designs
 
-This survey design package assists with equal effort allocation across strata by allowing input of a single value for either the number of samplers or the length of the line to be shared out equally among strata. When the design is systematic and the same design is used in every strata then dssd can calculate the spacing value across all strata at once and can ensure more even coverage. Alternatively, users can imput a single spacing value to be used in all strata. These strategies lead to as equal effort as possible across the study region. There may be small differences between strata depending on the design selected and the exact shapes of the different strata. When designs vary across strata or are not systematic then the spacing values or sampler numbers must be calculated on a stratum by stratum basis and may lead to slightly larger differences in coverage between strata, such differences can be assessed inside dssd by running coverage simulations. It is generally advisable to run coverage simulations for all potential designs.
+This survey design package assists with equal effort allocation across strata by allowing input of a single value for either the number of samplers or the length of the line to be shared out equally among strata. When the design is systematic and the same design is used in every strata then dssd can calculate the spacing value across all strata at once and can ensure more even coverage. Alternatively, users can input a single spacing value to be used in all strata. These strategies lead to as equal effort as possible across the study region. There may be small differences between strata depending on the design selected and the exact shapes of the different strata. When designs vary across strata or are not systematic then the spacing values or sampler numbers must be calculated on a stratum by stratum basis and may lead to slightly larger differences in coverage between strata, such differences can be assessed inside dssd by running coverage simulations. It is generally advisable to run coverage simulations for all potential designs.
 
 ### Unequal Effort Designs
 
