@@ -31,7 +31,7 @@ plot(region, transects)
 plot(region, transects, covered.area = TRUE)
 
 ## ----coverage, eval=FALSE-----------------------------------------------------
-#  design <- run.coverage(design, reps = 999)
+# design <- run.coverage(design, reps = 999)
 
 ## ----coverage2, echo=FALSE----------------------------------------------------
 filename <- system.file("extdata/vigresults", "GSdesign.robj", package = "dssd")
@@ -41,7 +41,7 @@ load(filename)
 plot(design, subtitle = "Systematic Parallel, line.length = 1300km")
 
 ## ----designstats2, eval = FALSE-----------------------------------------------
-#  design
+# design
 
 ## ----designstats, echo = FALSE------------------------------------------------
 ops <- options(warn = -1)

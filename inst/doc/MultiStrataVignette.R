@@ -51,8 +51,8 @@ transects <- generate.transects(design)
 plot(region, transects, lwd = 0.8, col = "blue")
 
 ## ----zz_sp_covnoeval, eval=FALSE----------------------------------------------
-#  design <- run.coverage(design, reps = 1000)
-#  plot(design)
+# design <- run.coverage(design, reps = 1000)
+# plot(design)
 
 ## ----zz_sp_cov, echo = FALSE, fig.asp = 1, fig.width=5, fig.align='center', fig.cap="Figure 6: A plot of the coverage scores for the mixed type design, based on the generation of 500 surveys from this design."----
 obj.name <- system.file("extdata/vigresults", "design_zz_sp.robj", package = "dssd")
@@ -77,8 +77,8 @@ transects <- generate.transects(design)
 plot(region, transects, lwd = 0.8, col = "blue")
 
 ## ----seg_design2, eval = FALSE------------------------------------------------
-#  design <- run.coverage(design, reps = 1000)
-#  plot(design)
+# design <- run.coverage(design, reps = 1000)
+# plot(design)
 
 ## ----seg_design3, fig.asp = 1, echo = FALSE, fig.width=5, fig.align='center', fig.cap="Figure 8: Coverage scores plotted for the segmented grid design"----
 obj.name <- system.file("extdata/vigresults", "design_seg.robj", package = "dssd")
